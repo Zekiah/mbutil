@@ -31,7 +31,7 @@ if __name__ == '__main__':
             but uses a flipped y coordinate, and "wms" which replicates
             the MapServer WMS TileCache directory structure "z/000/000/x/000/000/y.png"''',
         type='choice',
-        choices=['wms', 'tms', 'xyz'],
+        choices=['wms', 'tms', 'xyz', 'arcgis'],
         default='xyz')
         
     parser.add_option('--image_format', dest='format',

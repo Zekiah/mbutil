@@ -228,6 +228,8 @@ def mbtiles_to_disk(mbtiles_file, directory_path, **kwargs):
     done = 0
     msg = ''
     base_path = directory_path
+    if kwargs.get('scheme') == 'arcgis':
+        base_path = os.path.join(directory_path,"_alllayers")
     if not os.path.isdir(base_path):
         os.makedirs(base_path)
 
@@ -256,12 +258,20 @@ def mbtiles_to_disk(mbtiles_file, directory_path, **kwargs):
                 "%03d" % (int(x) % 1000),
                 "%03d" % (int(y) / 1000000),
                 "%03d" % ((int(y) / 1000) % 1000))
+        elif kwargs.get('scheme') == 'arcgis':
+            y = flip_y(z,y)
+            level = "L" + str(z).zfill(2)
+            row = "R" + hex(y).replace("0x", "").zfill(8)
+            col = "C" + hex(x).replace("0x", "").zfill(8)
+            tile_dir = os.path.join(base_path, level, row)
         else:
             tile_dir = os.path.join(base_path, str(z), str(x))
         if not os.path.isdir(tile_dir):
             os.makedirs(tile_dir)
         if kwargs.get('scheme') == 'wms':
             tile = os.path.join(tile_dir,'%03d.%s' % (int(y) % 1000, kwargs.get('format', 'png')))
+        elif kwargs.get('scheme') == 'arcgis':
+            tile = os.path.join(tile_dir,'%s.%s' % (col,metadata.get('format', 'png')))
         else:
             tile = os.path.join(tile_dir,'%s.%s' % (y, kwargs.get('format', 'png')))
         f = open(tile, 'wb')
